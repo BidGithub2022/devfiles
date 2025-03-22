@@ -6,13 +6,20 @@ metadata:
 components:
   - name: jmeter-gui
     container:
-      # Reference your custom image here after building and pushing it
       image: quay.io/mailtobidyut/images/jmeter-gui-ubi9:latest
       memoryLimit: 4Gi
       memoryRequest: 2Gi
       cpuLimit: "2"
       cpuRequest: "1"
       mountSources: true
+      # Add explicit command to initialize the container properly
+      command: ["/bin/bash"]
+      args: ["-c", "sudo mkdir -p /var/run/supervisor /var/log && sudo chmod 777 /var/run/supervisor /var/log && /startup.sh"]
+      env:
+        - name: HOME
+          value: /jmeter
+        - name: DISPLAY
+          value: ":1"
       endpoints:
         - name: jmeter-vnc
           targetPort: 6080
@@ -39,10 +46,10 @@ commands:
         kind: run
         isDefault: true
 
-  # - id: run-test
-  #   exec:
-  #     component: jmeter-gui
-  #     commandLine: "jmeter -n -t /jmeter/test-plans/${testFile} -l /jmeter/test-plans/results.csv -j /jmeter/test-plans/jmeter.log"
-  #     workingDir: /jmeter
-  #     group:
-  #       kind: run
+  - id: run-test
+    exec:
+      component: jmeter-gui
+      commandLine: "jmeter -n -t /jmeter/test-plans/${testFile} -l /jmeter/test-plans/results.csv -j /jmeter/test-plans/jmeter.log"
+      workingDir: /jmeter
+      group:
+        kind: run
