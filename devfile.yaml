@@ -39,10 +39,10 @@ commands:
         kind: run
         isDefault: true
 
-  - id: run-test
-    exec:
-      component: jmeter-gui
-      commandLine: "jmeter -n -t /jmeter/test-plans/${testFile} -l /jmeter/test-plans/results.csv -j /jmeter/test-plans/jmeter.log"
-      workingDir: /jmeter
-      group:
-        kind: run
+  # - id: run-test
+  #   exec:
+  #     component: jmeter-gui
+  #     commandLine: "jmeter -n -t /jmeter/test-plans/${testFile} -l /jmeter/test-plans/results.csv -j /jmeter/test-plans/jmeter.log"
+  #     workingDir: /jmeter
+  #     group:
+  #       kind: run
