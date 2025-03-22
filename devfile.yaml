@@ -1,0 +1,48 @@
+schemaVersion: 2.2.0
+metadata:
+  name: jmeter-gui-workspace
+  displayName: JMeter GUI Workspace (UBI9)
+  description: Apache JMeter workspace with GUI access via VNC (UBI9 based)
+components:
+  - name: jmeter-gui
+    container:
+      # Reference your custom image here after building and pushing it
+      image: quay.io/mailtobidyut/images/jmeter-gui-ubi9:latest
+      memoryLimit: 4Gi
+      memoryRequest: 2Gi
+      cpuLimit: "2"
+      cpuRequest: "1"
+      mountSources: true
+      endpoints:
+        - name: jmeter-vnc
+          targetPort: 6080
+          exposure: public
+          protocol: http
+          secure: false
+          attributes:
+            type: main
+      volumeMounts:
+        - name: jmeter-data
+          path: /jmeter/test-plans
+
+  - name: jmeter-data
+    volume:
+      size: 2Gi
+
+commands:
+  - id: start-jmeter
+    exec:
+      component: jmeter-gui
+      commandLine: "DISPLAY=:1 jmeter"
+      workingDir: /jmeter
+      group:
+        kind: run
+        isDefault: true
+
+  - id: run-test
+    exec:
+      component: jmeter-gui
+      commandLine: "jmeter -n -t /jmeter/test-plans/${testFile} -l /jmeter/test-plans/results.csv -j /jmeter/test-plans/jmeter.log"
+      workingDir: /jmeter
+      group:
+        kind: run
